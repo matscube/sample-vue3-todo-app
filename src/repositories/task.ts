@@ -1,5 +1,4 @@
-import { createSampleItems } from "@/factories/item"
-import { TodoItem } from "@/types"
+import { Task } from "@/types"
 
 const checkLocalStorage = (): boolean => {
   console.info(`checking localStorage exist...`)
@@ -9,17 +8,17 @@ const checkLocalStorage = (): boolean => {
 
 const storageKey = 'sample-vue2-todo-app_items'
 
-const getItemsFromLocalStorage = (): TodoItem[] => {
+const getItemsFromLocalStorage = (): Task[] => {
   if (!checkLocalStorage()) throw Error(`localStorageが存在しません`)
   const items = localStorage.getItem(storageKey)
   if (items === null) return []
-  return JSON.parse(items) as TodoItem[]
+  return JSON.parse(items) as Task[]
 }
-const setItemsToLocalStorage = (items: TodoItem[]) => {
+const setItemsToLocalStorage = (items: Task[]) => {
   if (!checkLocalStorage()) throw Error(`localStorageが存在しません`)
   localStorage.setItem(storageKey, JSON.stringify(items))
 }
-const addItemToLocalStorage = (item: TodoItem) => {
+const addItemToLocalStorage = (item: Task) => {
   if (!checkLocalStorage()) throw Error(`localStorageが存在しません`)
   const items = getItemsFromLocalStorage()
   items.push(item)
@@ -27,7 +26,7 @@ const addItemToLocalStorage = (item: TodoItem) => {
 }
 
 export const TaskRepository = {
-  async get(): Promise<TodoItem[]> {
+  async get(): Promise<Task[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const tasks = getItemsFromLocalStorage()
@@ -35,7 +34,7 @@ export const TaskRepository = {
       }, 300)
     })
   },
-  async save(task: TodoItem): Promise<boolean> {
+  async save(task: Task): Promise<boolean> {
     return new Promise((resolve) => {
       setTimeout(() => {
         addItemToLocalStorage(task)

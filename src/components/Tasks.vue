@@ -1,16 +1,18 @@
 <template>
-  <div>
-    <div class="flex items-center justify-center relative">
-      <h1 class="text-xl font-bold">Todo List</h1>
+  <div class="flex flex-col items-center">
+    <AppTitle>
+      Task List
+    </AppTitle>
+    <div class="w-full flex items-center justify-end">
       <button
-        class="absolute right-0 px-4 py-2 border rounded bg-blue-400 text-white font-bold hover:opacity-50 cursor-pointer"
+        class="px-4 py-2 border rounded bg-blue-400 text-white font-bold hover:opacity-50 cursor-pointer"
         type="button"
         @click="onReset"
       >
         Reset
       </button>
     </div>
-    <div class="mt-10 mx-auto max-w-full">
+    <div class="w-full mt-4 mx-auto">
       <ul>
         <li
           v-for="(item, index) in items"
@@ -31,12 +33,16 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { TodoItem } from '@/types';
+import { Task } from '@/types';
+import AppTitle from '@/components/AppTitle.vue'
 
 export default defineComponent({
+  components: {
+    AppTitle,
+  },
   props: {
     items: {
-      type: Array as () => TodoItem[],
+      type: Array as () => Task[],
       required: true,
     },
   },

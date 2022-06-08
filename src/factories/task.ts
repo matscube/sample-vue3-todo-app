@@ -1,17 +1,17 @@
-import { TodoItem } from "@/types"
+import { Task } from "@/types"
 
-export const createSampleItem = (payload: {
+export const createSampleTask = (payload: {
   id: number
-}): TodoItem => {
+}): Task => {
   return {
     title: `title ${payload.id}`,
     description: `description ${payload.id}`,
   }
 }
 
-export const createSampleItems = (payload: {
+export const createSampleTasks = (payload: {
   count: number,
-}): TodoItem[] => {
+}): Task[] => {
   return [...Array(payload.count)].map((_, i) => {
     return {
       title: `title ${i}`,

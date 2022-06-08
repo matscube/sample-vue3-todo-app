@@ -1,4 +1,4 @@
-export type TodoItem = {
+export type Task = {
   title: string
   description: string
 }

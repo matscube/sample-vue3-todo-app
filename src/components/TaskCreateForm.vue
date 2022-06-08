@@ -1,6 +1,8 @@
 <template>
-  <div class="">
-    <h1 class="text-xl font-bold">Create New Task</h1>
+  <div class="flex flex-col items-center">
+    <AppTitle>
+      Create New Task
+    </AppTitle>
     <form
       class="mt-10 mx-auto"
       :style="{
@@ -48,24 +50,30 @@
           v-model="item.description"
         />
       </div>
-      <button
-        class="px-4 py-2 border rounded bg-blue-400 text-white font-bold hover:opacity-50 cursor-pointer"
-        type="button"
-        @click="onSubmit"
-      >
-        Create
-      </button>
+      <div class="mt-4 mx-auto flex justify-center">
+        <button
+          class="px-4 py-2 border rounded bg-blue-400 text-white font-bold hover:opacity-50 cursor-pointer"
+          type="button"
+          @click="onSubmit"
+        >
+          Create
+        </button>
+      </div>
     </form>
   </div>
 </template>
 
 <script lang="ts">
-import { TodoItem } from '@/types';
+import { Task } from '@/types';
 import { defineComponent, ref } from 'vue'
+import AppTitle from '@/components/AppTitle.vue'
 
 export default defineComponent({
+  components: {
+    AppTitle,
+  },
   setup(_props, { emit }) {
-    const item = ref<TodoItem>({
+    const item = ref<Task>({
       title: '',
       description: '',
     })

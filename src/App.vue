@@ -1,33 +1,19 @@
 <template>
-  <div id="app" class="mx-auto max-w-screen-md">
-    <TodoForm
-      @submit="onSubmit"
-    />
-    <!-- Message Area -->
-    <div class="px-4 py-2">
-      <p
-        v-if="messageExist"
-        class="text-green-500 font-bold"
-      >
-        {{ message }}
-      </p>
-      <p
-        v-if="messageErrorExist"
-        class="text-red-500 font-bold"
-      >
-        {{ messageError }}
-      </p>
-    </div>
-    <TodoList
+  <div id="app" class="mx-auto max-w-screen-md px-4 py-2">
+    <TaskCreateForm
       class="mt-10"
-      :items="items"
-      @reset="reset"
+      @submit="onCreateTask"
+    />
+    <Tasks
+      class="mt-10"
+      :items="tasks"
+      @reset="onResetTasks"
     />
 
     <AppLoader
-      :is-show="isLoading"
+      :is-show="isTaskLoading"
     />
-    <ToastItems
+    <ToastMessages
       :messages="messages"
       @clear="onClearMessages"
     />
@@ -35,116 +21,76 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
-import TodoForm from './components/TodoForm.vue';
-import TodoList from './components/TodoList.vue';
+import { defineComponent, onMounted } from 'vue';
+import TaskCreateForm from './components/TaskCreateForm.vue';
+import Tasks from './components/Tasks.vue';
 import AppLoader from './components/AppLoader.vue';
-import ToastItems from './components/ToastItems.vue';
-import { TodoItem } from './types';
-import { TaskRepository } from './repositories/task';
+import ToastMessages from './components/ToastMessages.vue';
+import { Task } from './types';
+import { useTasks } from './composables/useTasks';
+import { useMessages } from './composables/useMessages';
 
 export default defineComponent({
   components: {
-    TodoForm,
-    TodoList,
+    TaskCreateForm,
+    Tasks,
     AppLoader,
-    ToastItems,
+    ToastMessages,
   },
   setup() {
-    /**
-     * 画面状態管理
-     */
-    const isLoading = ref<boolean>(false)
+    const {
+      isTaskLoading,
+      tasks,
+      loadTasks,
+      refreshTasks,
+      saveTask,
+      clearTasks,
+    } = useTasks()
 
-
-    /**
-     * Message管理
-     */
-    const message = ref<string>('')
-    const messageError = ref<string>('')
-    const messages = computed(() => {
-      const messages: string[] = []
-      if (message.value) messages.push(message.value)
-      if (messageError.value) messages.push(messageError.value)
-      return messages
-    })
-    const messageExist = computed(() => {
-      return message.value !== ''
-    })
+    const {
+      messages,
+      setMessage,
+      setErrorMessage,
+      clearMessages,
+    } = useMessages()
 
     /**
-     * Items
+     * Actions
      */
-    const items = ref<TodoItem[]>([])
-    const loadItems = async () => {
-      isLoading.value = true
-      const result = await TaskRepository.get()
-      items.value = result
-      isLoading.value = false
-    }
-    onMounted(loadItems)
-    const reset = async() => {
-      const result = await TaskRepository.clear()
+    const onResetTasks = async() => {
+      const result = await clearTasks()
       if (result) {
-        message.value = 'Created Successfully'
-        refresh()
+        setMessage('Created Successfully')
+        refreshTasks()
       } else {
-        message.value = 'Error'
+        setErrorMessage('Error')
       }
     }
-    const refresh = async () => {
-      loadItems()
-    }
-    const onSubmit = async (payload: {
-      item: TodoItem
+    const onCreateTask = async (payload: {
+      item: Task
     }) => {
-      console.info('onSubmit on App.vue')
-      console.info(payload.item)
-      // return
-      clearMessage()
-      isLoading.value = true
-      const result = await TaskRepository.save(payload.item)
-      isLoading.value = false
+      clearMessages()
+      const result = await saveTask(payload.item)
       if (result) {
-        message.value = 'Created Successfully'
-        refresh()
+        setMessage('Created Successfully')
+        refreshTasks()
       } else {
-        message.value = 'Error'
+        setErrorMessage('Error')
       }
-    }
-
-    /**
-     * Toast Messages
-     */
-    const clearMessage = () => {
-      message.value = ''
-      messageError.value = ''
     }
     const onClearMessages = () => {
-      clearMessage()
+      clearMessages()
     }
 
-
+    onMounted(loadTasks)
     return {
-      items,
+      tasks,
       messages,
+      isTaskLoading,
       onClearMessages,
-      reset,
-      refresh,
-      onSubmit,
-      isLoading,
+      onResetTasks,
+      onCreateTask,
     }
   }
 });
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
