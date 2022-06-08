@@ -42,11 +42,11 @@ export default defineComponent({
       emit('clear')
     }
     onMounted(() => {
-    window.addEventListener('keyup', (event) => {
-      if (event.key === 'Escape') {
-        emit('clear')
-      }
-    })
+      window.addEventListener('keyup', (event) => {
+        if (event.key === 'Escape') {
+          emit('clear')
+        }
+      })
     })
     return {
       isShow,
